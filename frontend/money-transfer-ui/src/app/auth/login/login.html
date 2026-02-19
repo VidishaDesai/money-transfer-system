@@ -6,59 +6,61 @@
     <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate>
 
       <!-- Email -->
-      <div class="form-group">
-        <label>Email Address</label>
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="formData.email"
-          #emailCtrl="ngModel"
-          required
-          email>
-      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="formData.email"
+            #emailCtrl="ngModel"
+            required
+            email>
 
-      @if (emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)) {
-        <div class="message error">
-          @if (emailCtrl.errors?.['required']) {
-            Email is required
-          }
-          @if (emailCtrl.errors?.['email']) {
-            Enter a valid email address
-          }
+            @if (emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)) {
+              <div class="message error inline">
+                @if (emailCtrl.errors?.['required']) {
+                  Email is required
+                }
+                @if (emailCtrl.errors?.['email']) {
+                  Enter a valid email address
+                }
+              </div>
+            }
         </div>
-      }
 
-      <!-- Password -->
-      <div class="form-group">
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="formData.password"
-          #passwordCtrl="ngModel"
-          required>
-      </div>
-
-      @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
-        <div class="message error">
-          Password is required
+        <!-- Password -->
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="formData.password"
+            #passwordCtrl="ngModel"
+            required>
+            
+            @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
+              <div class="message error inline">
+                Password is required
+              </div>
+            }
         </div>
-      }
 
-      <!-- Backend message -->
-      <div class="message"
-           [ngClass]="messageType"
-           [style.display]="message ? 'block' : 'none'">
-        {{ message }}
-      </div>
 
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="loading || loginForm.invalid">
-        {{ loading ? 'Logging in...' : 'Login' }}
-      </button>
+        <!-- Backend message -->
+        <div class="message full-width"
+            [ngClass]="messageType"
+            [style.display]="message ? 'block' : 'none'">
+          {{ message }}
+        </div>
 
+        <button
+          type="submit"
+          class="btn btn-primary full-width"
+          [disabled]="loading || loginForm.invalid">
+          {{ loading ? 'Logging in...' : 'Login' }}
+        </button>
+        </div>
     </form>
 
     <p class="link-text">
