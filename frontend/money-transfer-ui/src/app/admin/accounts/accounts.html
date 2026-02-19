@@ -1,0 +1,81 @@
+<div class="container">
+  <div class="card">
+    <h2>All Accounts</h2>
+
+    @if (accounts.length === 0) {
+      <p>No accounts found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Balance</th>
+              <th>
+                <div class="th-filter">
+                  <span>Status</span>
+                  <select
+                    [(ngModel)]="filters.status"
+                    (change)="applyFilters()"
+                    class="table-filter">
+
+                    <option value="">All</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="LOCKED">Locked</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
+                </div>
+              </th>
+
+              <th>
+                <div class="th-filter">
+                  <span>Approved</span>
+                  <select
+                    [(ngModel)]="filters.approved"
+                    (change)="applyFilters()"
+                    class="table-filter">
+
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (acc of paginatedAccounts; track acc.id) {
+              <tr>
+                <td>{{ acc.id }}</td>
+                <td>{{ acc.holderName }}</td>
+                <td>{{ acc.email }}</td>
+                <td>₹{{ formatAmount(acc.balance) }}</td>
+
+                <td>
+                  <span class="badge {{ acc.status.toLowerCase() }}">
+                    {{ acc.status }}
+                  </span>
+                </td>
+
+                <td>{{ acc.approved ? '✓' : '✗' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-pagination
+          [totalItems]="filteredAccounts.length"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+        
+      </div>
+    }
+
+    <br>
+    <!-- <button class="btn btn-secondary" routerLink="/admin">Dashboard</button> -->
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<app-navbar></app-navbar>
+
+<div class="page-container">
+  <router-outlet></router-outlet>
+</div>
+
+@if (showLogoutModal) {
+  <app-logout-confirm
+    (confirm)="confirmLogout()"
+    (cancel)="closeLogout()">
+  </app-logout-confirm>
+}

@@ -1,0 +1,60 @@
+<div class="container" *ngIf="analytics">
+
+  <div class="card">
+  <h2>System Analytics</h2>
+
+    <div class="kpi-grid">
+
+        <div class="kpi-item">
+            <div class="kpi-label">Total Transactions</div>
+            <div class="kpi-value">{{ kpis?.totalTransactions }}</div>
+        </div>
+
+        <div class="kpi-item">
+            <div class="kpi-label">Total Amount</div>
+            <div class="kpi-value">₹{{ kpis?.totalAmount }}</div>
+        </div>
+
+        <div class="kpi-item">
+            <div class="kpi-label">Average Transaction</div>
+            <div class="kpi-value">₹{{ kpis?.averageTransactionAmount }}</div>
+        </div>
+
+        <div class="kpi-item">
+            <div class="kpi-label">Largest Transaction</div>
+            <div class="kpi-value">₹{{ kpis?.largestTransaction }}</div>
+        </div>
+
+        <div class="kpi-item">
+            <div class="kpi-label">Success Rate</div>
+            <div class="kpi-value">{{ kpis?.successRate }}%</div>
+        </div>
+
+        <!-- <div class="kpi-item">
+            <div class="kpi-label">Growth Rate</div>
+            <div class="kpi-value">
+                {{ calculateGrowthRate(analytics.monthlyTrend) }}%
+            </div>
+        </div> -->
+
+        </div>
+    </div>
+
+  <div class="chart-row">
+
+    <div class="card chart-card">
+      <h3>Daily Trend</h3>
+      <canvas id="dailyChart"></canvas>
+    </div>
+
+    <div class="card chart-card">
+        <h3>Status Breakdown</h3>
+        <div class="pie-wrapper">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+
+  </div>
+
+</div>

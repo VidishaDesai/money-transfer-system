@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Money Transfer System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="card">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join our secure money transfer platform</p>
+
+        <form id="registerForm">
+
+            <div class="form-group">
+                <label for="holderName">Full Name</label>
+                <input type="text" id="holderName" name="holderName" required minlength="2">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="address" required>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="dateOfBirth" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+
+            <!-- NEW ACCOUNT TYPE DROPDOWN -->
+            <div class="form-group">
+                <label for="accountType">Account Type</label>
+                <select id="accountType" name="accountType" required>
+                    <option value="">Select Account Type</option>
+                </select>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+
+        <p class="link-text">
+            Already have an account?
+            <a href="/login.html">Login here</a>
+        </p>
+    </div>
+</div>
+
+<!-- Load config first -->
+<script src="/js/config.js"></script>
+<script>
+    // Dynamically populate account types
+    const accountTypeSelect = document.getElementById('accountType');
+
+    APP_CONFIG.ACCOUNT_TYPES.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        accountTypeSelect.appendChild(option);
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            holderName: document.getElementById('holderName').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            accountType: document.getElementById('accountType').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            dateOfBirth: document.getElementById('dateOfBirth').value
+        };
+
+        try {
+            const response = await fetch(`${APP_CONFIG.API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showMessage(
+                    'Registration successful! Your account is pending admin approval.',
+                    'success'
+                );
+                document.getElementById('registerForm').reset();
+                setTimeout(() => window.location.href = '/login.html', 3000);
+            } else {
+                showMessage(data.message || 'Registration failed', 'error');
+            }
+
+        } catch (error) {
+            showMessage('An error occurred. Please try again.', 'error');
+        }
+    });
+
+    function showMessage(msg, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = msg;
+        messageDiv.className = 'message ' + type;
+    }
+</script>
+</body>
+</html>

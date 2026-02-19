@@ -1,0 +1,89 @@
+<!-- <div class="navbar">
+  <h2>Money Transfer System</h2>
+  <div>
+    <span>{{ holderName }}</span>
+    <button class="btn btn-small" (click)="logout()">Logout</button>
+  </div>
+</div> -->
+
+<div class="container">
+  <div class="card">
+
+    <div class="dashboard-header">
+      <h1>Welcome, {{ holderName }}</h1>
+      <app-profile></app-profile>
+    </div>
+
+    <div class="balance-card">
+      <p>Account ID: <strong>{{ accountId }}</strong></p>
+      <p>Current Balance: <strong>₹{{ balance }}</strong></p>
+    </div>
+
+    <!-- <div class="button-group">
+
+      <button
+        routerLink="transfer"
+        routerLinkActive="active-link"
+        #rla1="routerLinkActive"
+        class="btn"
+        [ngClass]="rla1.isActive ? 'btn-secondary' : 'btn-primary'">
+        Transfer Money
+      </button>
+
+      <button
+        routerLink="transactions"
+        routerLinkActive="active-link"
+        #rla2="routerLinkActive"
+        class="btn"
+        [ngClass]="rla2.isActive ? 'btn-secondary' : 'btn-primary'">
+        Transaction History
+      </button>
+
+    </div> -->
+
+    <div class="action-grid">
+
+      <div
+        routerLink="transfer"
+        routerLinkActive="active"
+        #rla1="routerLinkActive"
+        class="action-card"
+        [class.active]="rla1.isActive">
+
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M16 17l5-5-5-5v3H4v4h12v3z"/>
+          </svg>
+        </div>
+
+        <h3>Transfer Money</h3>
+        <p>Send funds securely to another account</p>
+
+      </div>
+
+      <div
+        routerLink="transactions"
+        routerLinkActive="active"
+        #rla2="routerLinkActive"
+        class="action-card"
+        [class.active]="rla2.isActive">
+
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M3 3h18v2H3V3m0 6h18v2H3V9m0 6h18v2H3v-2z"/>
+          </svg>
+        </div>
+
+        <h3>Transaction History</h3>
+        <p>View all credits and debits</p>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<router-outlet></router-outlet>

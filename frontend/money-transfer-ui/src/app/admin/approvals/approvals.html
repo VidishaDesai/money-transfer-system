@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="card">
+    <h2>Pending Approvals</h2>
+
+    @if (accounts.length === 0) {
+      <p>No pending approvals.</p>
+    } @else {
+      <div class="message"
+          [ngClass]="messageType"
+          [style.display]="message ? 'block' : 'none'">
+        {{ message }}
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (acc of paginatedAccounts; track acc.id) {
+            <tr>
+              <td>{{ acc.id }}</td>
+              <td>{{ acc.holderName }}</td>
+              <td>{{ acc.email }}</td>
+              <td>
+                <button class="btn btn-small btn-success"
+                        (click)="approve(acc.id)"
+                        [disabled]="loading">
+                  Approve
+                </button>
+                &nbsp;&nbsp;
+                <button class="btn btn-small btn-danger"
+                        (click)="reject(acc.id)"
+                        [disabled]="loading">
+                  Reject
+                </button>
+
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <app-pagination
+        [totalItems]="accounts.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+    <!-- <button class="btn btn-secondary" routerLink="/admin">Dashboard</button> -->
+  </div>
+</div>

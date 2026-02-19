@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="card">
+    <h2>Deposit Money</h2>
+
+    <form (ngSubmit)="deposit(depositForm)" #depositForm="ngForm">
+
+      <div class="form-group">
+        <!-- <label>Select Account</label> -->
+
+        <app-account-search
+          [apiUrl]="accountsAPI"
+          [excludeCurrentUser]="true"
+          (accountSelected)="onAccountSelected($event)">
+        </app-account-search>
+
+      </div>
+
+      <div class="form-group">
+        <label>Amount</label>
+        <input
+          type="number"
+          [(ngModel)]="amount"
+          name="amount"
+          #amountCtrl="ngModel"
+          required
+          min="1">
+      </div>
+
+      @if (amountCtrl.invalid && (amountCtrl.dirty || amountCtrl.touched)) {
+        <div class="message error">
+          @if (amountCtrl.errors?.['required']) {
+            Amount is required
+          }
+          @if (amountCtrl.errors?.['min']) {
+            Amount must be greater than 0
+          }
+        </div>
+      }
+
+      <div class="message"
+           [ngClass]="messageType"
+           [style.display]="message ? 'block' : 'none'">
+        {{ message }}
+      </div>
+
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="loading || !accountId || amountCtrl.invalid">
+        {{ loading ? 'Processing...' : 'Deposit' }}
+      </button>
+
+    </form>
+  </div>
+</div>

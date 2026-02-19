@@ -1,0 +1,54 @@
+<div class="profile-section">
+
+  <button
+    type="button"
+    class="profile-icon"
+    (click)="toggleMenu()">
+
+    <svg viewBox="0 0 24 24">
+      <path fill="currentColor"
+        d="M12 12c2.7 0 5-2.3 5-5S14.7 2 12 2
+           7 4.3 7 7s2.3 5 5 5m0 2
+           c-3.3 0-10 1.7-10 5v3h20v-3
+           c0-3.3-6.7-5-10-5z"/>
+    </svg>
+
+   
+  </button>
+
+  @if (showMenu) {
+    <div class="profile-menu">
+
+      <div class="profile-grid">
+
+        <div class="profile-item">
+          <div class="label">Name</div>
+          <div class="value">{{ profile?.holderName || 'N/A' }}</div>
+        </div>
+
+        <div class="profile-item">
+          <div class="label">Email</div>
+          <div class="value">{{ profile?.email || 'N/A' }}</div>
+        </div>
+
+        <div class="profile-item">
+          <div class="label">Phone</div>
+          <div class="value">{{ profile?.phone || 'N/A' }}</div>
+        </div>
+
+        <div class="profile-item full">
+          <div class="label">Address</div>
+          <div class="value wrap">{{ profile?.address || 'N/A' }}</div>
+        </div>
+
+        <div class="profile-item">
+          <div class="label">DOB</div>
+          <div class="value">{{ profile?.dateOfBirth || 'N/A' }}</div>
+        </div>
+
+      </div>
+
+    </div>
+  }
+
+</div>

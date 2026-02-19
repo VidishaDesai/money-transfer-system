@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Money Transfer System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+<div class="navbar">
+    <h2>Money Transfer System - Admin</h2>
+    <div>
+        <span id="userName"></span>
+        <button onclick="logout()" class="btn btn-small">Logout</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h1>Admin Dashboard</h1>
+    </div>
+
+    <!-- Pending Account Approvals -->
+    <div class="card">
+        <h2>Pending Approvals</h2>
+        <div id="pendingAccounts"></div>
+    </div>
+
+    <!-- Pending Rollback Requests -->
+    <div class="card">
+        <h2>Pending Rollback Requests</h2>
+        <div id="pendingRollbacks"></div>
+    </div>
+
+    <!-- Deposit -->
+    <div class="card">
+        <h2>Deposit Money</h2>
+        <form id="depositForm">
+            <div class="form-group">
+                <label>Account ID</label>
+                <input type="number" id="depositAccountId" required>
+            </div>
+
+            <div class="form-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="depositAmount" step="0.01" min="0.01" required>
+            </div>
+
+            <div id="depositMessage" class="message"></div>
+            <button type="submit" class="btn btn-primary">Deposit</button>
+        </form>
+    </div>
+
+    <!-- All Transactions -->
+    <div class="card">
+        <h2>All Transactions</h2>
+        <div id="allTransactions"></div>
+    </div>
+
+    <!-- All Accounts -->
+    <div class="card">
+        <h2>All Accounts</h2>
+        <div id="allAccounts"></div>
+    </div>
+
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+
+    // ================= AUTH CHECK =================
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!token || role !== 'ROLE_ADMIN') {
+        window.location.href = '/login.html';
+    }
+
+    document.getElementById('userName').textContent =
+        localStorage.getItem('holderName');
+
+    // ================= PENDING ACCOUNTS =================
+    async function loadPendingAccounts() {
+        const response = await apiCall('/api/v1/admin/accounts/pending');
+        if (!response.ok) return;
+
+        const accounts = await response.json();
+        const container = document.getElementById('pendingAccounts');
+
+        if (accounts.length === 0) {
+            container.innerHTML = "<p>No pending approvals.</p>";
+            return;
+        }
+
+        let html = `
+            <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        accounts.forEach(acc => {
+            html += `
+                <tr>
+                    <td>${acc.id}</td>
+                    <td>${acc.holderName}</td>
+                    <td>${acc.email}</td>
+                    <td>
+                        <button onclick="approveAccount(${acc.id})" class="btn btn-small btn-success">Approve</button>
+                        <button onclick="rejectAccount(${acc.id})" class="btn btn-small btn-danger">Reject</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
+
+    async function approveAccount(id) {
+        await apiCall(`/api/v1/admin/accounts/${id}/approve`, { method: 'POST' });
+        loadPendingAccounts();
+        loadAllAccounts();
+    }
+
+    async function rejectAccount(id) {
+        await apiCall(`/api/v1/admin/accounts/${id}/reject`, { method: 'POST' });
+        loadPendingAccounts();
+        loadAllAccounts();
+    }
+
+    // ================= ROLLBACK REQUESTS =================
+    async function loadPendingRollbacks() {
+        const response = await apiCall('/api/v1/admin/transfers/rollback-requests');
+        if (!response.ok) return;
+
+        const rollbacks = await response.json();
+        const container = document.getElementById('pendingRollbacks');
+
+        if (!rollbacks || rollbacks.length === 0) {
+            container.innerHTML = "<p>No pending rollback requests.</p>";
+            return;
+        }
+
+        let html = `
+            <table>
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount</th>
+                    <th>Requested At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        rollbacks.forEach(tx => {
+            html += `
+                <tr>
+                    <td>${tx.id}</td>
+                    <td>${tx.fromAccountId}</td>
+                    <td>${tx.toAccountId}</td>
+                    <td>₹${parseFloat(tx.amount).toFixed(2)}</td>
+                    <td>${tx.rollbackRequestedAt ? new Date(tx.rollbackRequestedAt).toLocaleString() : ''}</td>
+                    <td>
+                        <button onclick="approveRollback('${tx.id}')" class="btn btn-small btn-success">Approve</button>
+                        <button onclick="rejectRollback('${tx.id}')" class="btn btn-small btn-danger">Reject</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
+
+    async function approveRollback(transactionId) {
+        if (!confirm("Approve this rollback?")) return;
+
+        await apiCall(`/api/v1/admin/rollbacks/${transactionId}/approve`, { method: 'POST' });
+
+        loadPendingRollbacks();
+        loadAllTransactions();
+    }
+
+    async function rejectRollback(transactionId) {
+        if (!confirm("Reject this rollback?")) return;
+
+        await apiCall(`/api/v1/admin/rollbacks/${transactionId}/reject`, { method: 'POST' });
+
+        loadPendingRollbacks();
+        loadAllTransactions();
+    }
+
+    // ================= DEPOSIT =================
+    document.getElementById('depositForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {
+            accountId: parseInt(document.getElementById('depositAccountId').value),
+            amount: parseFloat(document.getElementById('depositAmount').value)
+        };
+
+        const response = await apiCall('/api/v1/admin/accounts/deposit', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            document.getElementById('depositForm').reset();
+            loadAllTransactions();
+        }
+    });
+
+    // ================= TRANSACTIONS =================
+    async function loadAllTransactions() {
+        const response = await apiCall('/api/v1/admin/transactions');
+        if (!response.ok) return;
+
+        const transactions = await response.json();
+        const container = document.getElementById('allTransactions');
+
+        if (transactions.length === 0) {
+            container.innerHTML = "<p>No transactions yet.</p>";
+            return;
+        }
+
+        let html = `
+            <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        transactions.slice(0, 30).forEach(tx => {
+            html += `
+                <tr>
+                    <td>${new Date(tx.createdOn).toLocaleString()}</td>
+                    <td>${tx.transactionType}</td>
+                    <td>${tx.fromAccountId || 'N/A'}</td>
+                    <td>${tx.toAccountId || 'N/A'}</td>
+                    <td>₹${parseFloat(tx.amount).toFixed(2)}</td>
+                    <td>${tx.status}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
+
+    // ================= ACCOUNTS =================
+    async function loadAllAccounts() {
+        const response = await apiCall('/api/v1/admin/accounts');
+        if (!response.ok) return;
+
+        const accounts = await response.json();
+        const container = document.getElementById('allAccounts');
+
+        let html = `
+            <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Approved</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        accounts.forEach(acc => {
+            html += `
+                <tr>
+                    <td>${acc.id}</td>
+                    <td>${acc.holderName}</td>
+                    <td>${acc.email}</td>
+                    <td>₹${parseFloat(acc.balance).toFixed(2)}</td>
+                    <td>${acc.status}</td>
+                    <td>${acc.approved ? '✓' : '✗'}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        container.innerHTML = html;
+    }
+
+    // ================= INITIAL LOAD =================
+    loadPendingAccounts();
+    loadPendingRollbacks();
+    loadAllTransactions();
+    loadAllAccounts();
+
+    // Auto refresh rollback requests every 10 seconds
+    setInterval(loadPendingRollbacks, 10000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<div class="modal-backdrop">
+  <div class="modal-card">
+
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="onConfirm()">
+        {{ confirmText }}
+      </button>
+
+      <button class="btn btn-secondary" (click)="onCancel()">
+        {{ cancelText }}
+      </button>
+    </div>
+
+  </div>
+</div>

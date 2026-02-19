@@ -1,0 +1,128 @@
+
+.profile-section {
+  position: relative;
+}
+
+/* ---------------- PROFILE ICON ---------------- */
+
+.profile-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+}
+
+.profile-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: #111;              /* ensure visible in light mode */
+  transition: fill 0.2s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* ---------------- PROFILE MENU ---------------- */
+
+.profile-menu {
+  position: absolute;
+  top: 52px;
+  right: 0;
+
+  width: 320px;
+  max-width: 90vw;
+
+  background: #ffffff;
+  color: #111;
+
+  border-radius: 12px;
+  padding: 18px;
+
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+
+  z-index: 1000;
+}
+
+/* ---------------- GRID LAYOUT ---------------- */
+
+.profile-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.profile-item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------- TEXT ---------------- */
+
+.label {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.35;
+}
+
+.value.wrap {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+:host-context(.dark-mode) .profile-icon {
+  /* background: #000; */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+:host-context(.dark-mode) .profile-icon svg {
+  fill: #ffffff;   /* icon becomes white */
+}
+
+/* :host-context(.dark-mode) .profile-icon:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+} */
+
+/* PROFILE MENU DARK */
+
+:host-context(.dark-mode) .profile-menu {
+  background: #000;       /* solid black as requested */
+  color: #ffffff;
+
+  /* border: 1px solid rgba(255,255,255,0.08); */
+  /* box-shadow: 0 14px 30px rgba(0,0,0,0.75); */
+}
+
+/* TEXT DARK */
+
+:host-context(.dark-mode) .label {
+  color: #9aa0a6;
+}
+
+:host-context(.dark-mode) .value {
+  color: #ffffff;
+}

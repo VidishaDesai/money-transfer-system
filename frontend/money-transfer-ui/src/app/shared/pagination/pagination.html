@@ -1,0 +1,23 @@
+@if (totalPages > 1) {
+  <div class="pagination">
+
+    <button (click)="changePage(currentPage - 1)"
+            [disabled]="currentPage === 1">
+      Prev
+    </button>
+
+    @for (p of pages(); track p) {
+      <button
+        (click)="changePage(p)"
+        [class.active]="p === currentPage">
+        {{ p }}
+      </button>
+    }
+
+    <button (click)="changePage(currentPage + 1)"
+            [disabled]="currentPage === totalPages">
+      Next
+    </button>
+
+  </div>
+}

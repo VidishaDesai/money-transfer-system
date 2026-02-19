@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Money Transfer System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <style>
+        /* Profile Section Styling */
+        .profile-section {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-icon {
+            cursor: pointer;
+            font-size: 22px;
+            background: #eee;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .profile-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 45px;
+            background: white;
+            padding: 15px;
+            width: 260px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .profile-menu p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Money Transfer System</h2>
+    <div class="profile-section">
+        <span id="userName"></span>
+        <div class="profile-icon" onclick="toggleProfileMenu()">👤</div>
+
+        <div id="profileMenu" class="profile-menu">
+            <p><strong>Name:</strong> <span id="profileName"></span></p>
+            <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+            <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+            <p><strong>Address:</strong> <span id="profileAddress"></span></p>
+            <p><strong>DOB:</strong> <span id="profileDob"></span></p>
+            <button onclick="logout()" class="btn btn-small">Logout</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h1>My Dashboard</h1>
+        <div class="balance-card">
+            <p>Account ID: <strong id="accountId"></strong></p>
+            <p>Current Balance: <strong id="balance">₹0.00</strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Transfer Money</h2>
+        <form id="transferForm">
+            <div class="form-group">
+                <label for="toAccountId">To Account ID</label>
+                <input type="number" id="toAccountId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount (₹)</label>
+                <input type="number" id="amount" step="0.01" min="0.01" required>
+            </div>
+
+            <div id="transferMessage" class="message"></div>
+
+            <button type="submit" class="btn btn-primary">Transfer</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Transaction History</h2>
+        <div id="transactionHistory"></div>
+    </div>
+
+</div>
+
+<script src="/js/app.js"></script>
+<script>
+
+    // 🔐 Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+    }
+
+    document.getElementById('userName').textContent =
+        localStorage.getItem('holderName');
+
+    document.getElementById('accountId').textContent =
+        localStorage.getItem('accountId');
+
+
+    /* =======================
+       PROFILE SECTION
+    ==========================*/
+
+    function toggleProfileMenu() {
+        const menu = document.getElementById("profileMenu");
+        menu.style.display =
+            menu.style.display === "block" ? "none" : "block";
+    }
+
+    async function loadProfile() {
+        const accountId = localStorage.getItem("accountId");
+
+        try {
+            const response = await apiCall(`/api/v1/accounts/${accountId}`);
+
+            if (response.ok) {
+                const user = await response.json();
+
+                document.getElementById("profileName").textContent =
+                    user.holderName || "N/A";
+                document.getElementById("profileEmail").textContent =
+                    user.email || "N/A";
+                document.getElementById("profilePhone").textContent =
+                    user.phone || "N/A";
+                document.getElementById("profileAddress").textContent =
+                    user.address || "N/A";
+                document.getElementById("profileDob").textContent =
+                    user.dateOfBirth || "N/A";
+            }
+        } catch (error) {
+            console.error("Failed to load profile:", error);
+        }
+    }
+
+
+    /* =======================
+       BALANCE
+    ==========================*/
+
+    async function loadBalance() {
+        const accountId = localStorage.getItem('accountId');
+
+        try {
+            const response =
+                await apiCall(`/api/v1/accounts/${accountId}/balance`);
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('balance').textContent =
+                    '₹' + parseFloat(data.balance).toFixed(2);
+            }
+        } catch (error) {
+            console.error('Failed to load balance:', error);
+        }
+    }
+
+
+    /* =======================
+       TRANSACTIONS
+    ==========================*/
+
+    async function loadTransactions() {
+        try {
+            const response = await apiCall('/api/v1/transfers/history');
+
+            if (response.ok) {
+                const transactions = await response.json();
+                displayTransactions(transactions);
+            }
+        } catch (error) {
+            console.error('Failed to load transactions:', error);
+        }
+    }
+
+    function displayTransactions(transactions) {
+
+        const container =
+            document.getElementById('transactionHistory');
+
+        if (!transactions || transactions.length === 0) {
+            container.innerHTML = '<p>No transactions yet.</p>';
+            return;
+        }
+
+        let html = `
+            <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        transactions.forEach(tx => {
+
+            const date =
+                new Date(tx.createdOn).toLocaleString();
+
+            const type = tx.transactionType;
+
+            const otherAccount =
+                type === 'DEBIT'
+                ? tx.toAccountId
+                : tx.fromAccountId;
+
+            const amount =
+                parseFloat(tx.amount).toFixed(2);
+
+            const status = tx.status;
+
+            let actionButton = '';
+
+            if (type === 'DEBIT' && status === 'SUCCESS') {
+                actionButton = `
+                    <button
+                        onclick="requestRollback('${tx.id}')"
+                        class="btn btn-small btn-danger">
+                        Request Rollback
+                    </button>
+                `;
+            }
+
+            html += `
+                <tr>
+                    <td>${date}</td>
+                    <td><span class="badge ${type.toLowerCase()}">${type}</span></td>
+                    <td>${otherAccount || 'N/A'}</td>
+                    <td>₹${amount}</td>
+                    <td><span class="badge ${status.toLowerCase()}">${status}</span></td>
+                    <td>${actionButton}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+
+    async function requestRollback(transactionId) {
+
+        if (!confirm("Are you sure you want to request rollback?")) return;
+
+        try {
+            const response =
+                await apiCall(`/api/v1/transfers/${transactionId}/rollback`, {
+                    method: 'POST'
+                });
+
+            if (response.ok) {
+                alert("Rollback request submitted successfully!");
+                loadTransactions();
+            } else {
+                const data = await response.json();
+                alert(data.message || "Rollback failed");
+            }
+
+        } catch (error) {
+            alert("Error requesting rollback");
+        }
+    }
+
+
+    /* =======================
+       TRANSFER
+    ==========================*/
+
+    document.getElementById('transferForm')
+        .addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        const transferData = {
+            fromAccountId:
+                parseInt(localStorage.getItem('accountId')),
+            toAccountId:
+                parseInt(document.getElementById('toAccountId').value),
+            amount:
+                parseFloat(document.getElementById('amount').value),
+            idempotencyKey: generateUUID()
+        };
+
+        try {
+            const response = await apiCall('/api/v1/transfers', {
+                method: 'POST',
+                body: JSON.stringify(transferData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showTransferMessage('Transfer successful!', 'success');
+                document.getElementById('transferForm').reset();
+                loadBalance();
+                loadTransactions();
+            } else {
+                showTransferMessage(data.message || 'Transfer failed', 'error');
+            }
+
+        } catch (error) {
+            showTransferMessage(
+                'An error occurred. Please try again.',
+                'error'
+            );
+        }
+    });
+
+    function showTransferMessage(msg, type) {
+        const messageDiv =
+            document.getElementById('transferMessage');
+        messageDiv.textContent = msg;
+        messageDiv.className = 'message ' + type;
+    }
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+            .replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x'
+                    ? r
+                    : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+    }
+
+
+    /* =======================
+       INITIAL LOAD
+    ==========================*/
+
+    loadProfile();
+    loadBalance();
+    loadTransactions();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<div class="calendar">
+
+  <div class="calendar-inner">
+
+    <div class="calendar-controls">
+      <button type="button" (click)="prevMonth()">‹</button>
+
+      <div class="calendar-year-month">
+        {{ monthNames[viewDate.getMonth()] }}
+        -
+        {{ viewDate.getFullYear() }}
+      </div>
+
+      <button type="button" (click)="nextMonth()">›</button>
+    </div>
+
+    <div class="calendar-body">
+
+      @for (day of weekdays; track day) {
+        <div class="weekday">{{ day }}</div>
+      }
+
+      @for (d of daysArray; track d) {
+        <div class="date-cell" (click)="selectDay(d)">
+          {{ d }}
+        </div>
+      }
+
+    </div>
+
+  </div>
+</div>

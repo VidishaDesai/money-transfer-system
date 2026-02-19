@@ -1,0 +1,79 @@
+<div class="container">
+  <div class="card">
+    <h2>Pending Rollback Requests</h2>
+
+    @if (rollbacks.length === 0) {
+      <p>No pending rollback requests.</p>
+    } @else {
+
+      <div class="message"
+          [ngClass]="messageType"
+          [style.display]="message ? 'block' : 'none'">
+        {{ message }}
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Amount</th>
+              <th>Requested At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (tx of paginatedRollbacks; track tx.id) {
+              <tr>
+                <td>{{ tx.id }}</td>
+                <td>{{ tx.fromAccountId }}</td>
+                <td>{{ tx.toAccountId }}</td>
+                <td>₹{{ tx.amount }}</td>
+                <td>{{ formatDate(tx.rollbackRequestedAt) }}</td>
+
+                <td>
+                  <button
+                    class="btn btn-small btn-success"
+                    (click)="openConfirm(tx.id, 'approve')"
+                    [disabled]="loading">
+                    Approve
+                  </button>
+
+                  &nbsp;&nbsp;
+
+                  <button
+                    class="btn btn-small btn-danger"
+                    (click)="openConfirm(tx.id, 'reject')"
+                    [disabled]="loading">
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <app-pagination
+        [totalItems]="rollbacks.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  </div>
+</div>
+
+@if (showConfirm) {
+  <app-confirm-dialog
+    title="Confirm Rollback"
+    message="Are you sure you want to {{ confirmAction }} this rollback request?"
+    confirmText="Yes, {{ confirmAction }}"
+    cancelText="Cancel"
+    (confirm)="confirmActionExecute()"
+    (cancel)="closeConfirm()">
+  </app-confirm-dialog>
+}

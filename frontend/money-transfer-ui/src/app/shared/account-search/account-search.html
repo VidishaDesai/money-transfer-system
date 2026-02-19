@@ -1,0 +1,48 @@
+<div class="form-group">
+  <label>Search Account (ID or Name)</label>
+
+  <div class="autocomplete-wrapper" #searchBox>
+
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+      (keydown)="handleKeyDown($event)"
+      autocomplete="off"
+      placeholder="Account ID or Name..."
+      required
+    />
+
+    @if (showDropdown) {
+      <div class="autocomplete-dropdown">
+
+        @if (filteredAccounts.length === 0) {
+          <div class="autocomplete-item disabled">
+            No accounts found
+          </div>
+        }
+
+        @for (acc of filteredAccounts; track acc.id; let i = $index) {
+          <div
+            class="autocomplete-item"
+            [class.active]="i === highlightedIndex"
+            (click)="selectAccount(acc)">
+            {{ acc.id }} - {{ acc.holderName }}
+          </div>
+        }
+
+      </div>
+    }
+  </div>
+
+  @if (selectedAccount) {
+    <div class="recipient-card">
+      <div class="recipient-info">
+        <div class="recipient-name">{{ selectedAccount.holderName }}</div>
+        <div class="recipient-id">Account ID: {{ selectedAccount.id }}</div>
+      </div>
+
+      <button type="button" class="recipient-clear" (click)="clearSelection()">✕</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,131 @@
+.navbar-fixed {
+  position: fixed;
+  top: 15px;                 /* space from top */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: calc(100% - 32px);  
+  max-width: 1200px;
+
+  height: 60px;
+
+  /* background: rgba(255,255,255,0.75); */
+  background: linear-gradient(135deg, #f5f7fa 4%, #e6e9f0 96%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(255,255,255,0.4);
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,0.12),
+  0 2px 8px rgba(0,0,0,0.08);
+
+  z-index: 1000;
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.brand {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.nav-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  color: #000000;
+}
+
+.nav-link:hover {
+  color: #667eea;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+}
+
+:host-context(.dark-mode) .navbar-fixed {
+  background: rgba(15,15,15,0.75);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+:host-context(.dark-mode) .nav-link {
+  color: #e5e5e5;
+}
+
+:host-context(.dark-mode) .brand {
+  color: #e5e5e5;
+}
+
+@media (max-width: 1024px) {
+
+  .navbar-fixed {
+    width: calc(100% - 30px);   /* slightly tighter margins */
+    max-width: 100%;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .navbar-fixed {
+    height: auto;
+    width: calc(100% - 48px);
+    padding: 10px 0;
+  }
+
+  .navbar-inner {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;              /* space between title and links */
+    padding: 12px 16px;     /* proper margins inside navbar */
+    text-align: center;
+  }
+
+  .brand {
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+
+  .nav-right {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 8px;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 0.95rem;
+  }
+
+  :host-context(.dark-mode) .nav-right {
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+}

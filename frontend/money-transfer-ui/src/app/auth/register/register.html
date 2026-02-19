@@ -1,0 +1,170 @@
+<div class="container">
+  <div class="card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join our secure money transfer platform</p>
+
+    <form (ngSubmit)="onRegister(registerForm)" #registerForm="ngForm" novalidate>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input
+            type="text"
+            name="holderName"
+            [(ngModel)]="formData.holderName"
+            required
+            minlength="2">
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="formData.email"
+            #emailCtrl="ngModel"
+            required
+            email
+          />
+
+           @if (emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)) {
+            <div class="message error inline">
+              @if (emailCtrl.errors?.['required']) { Email is required }
+              @if (emailCtrl.errors?.['email']) { Enter a valid email address }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="formData.password"
+            #passwordCtrl="ngModel"
+            required
+            minlength="6"
+          />
+           @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
+            <div class="message error">
+              @if (passwordCtrl.errors?.['required']) { Password is required }
+              @if (passwordCtrl.errors?.['minlength']) { Password must be at least 6 characters }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            #confirmCtrl="ngModel"
+            required
+          />  
+          @if ((confirmCtrl.dirty || confirmCtrl.touched) && confirmPassword !== formData.password) {
+            <div class="message error">
+              Passwords do not match!
+            </div>
+          }
+        </div>
+
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input
+            type="text"
+            name="phone"
+            [(ngModel)]="formData.phone"
+            required>
+        </div>
+
+        <!-- <div class="form-group">
+          <label>Date of Birth</label>
+          <div class="date-input-wrapper">
+             <input
+              type="text"
+              [value]="formData.dateOfBirth"
+              readonly
+              (click)="showCalendar = true"
+              placeholder="Select date"
+              required>
+              <button
+                type="button"
+                class="calendar-trigger"
+                (click)="showCalendar = !showCalendar">
+                <svg viewBox="0 0 24 24">
+                  <path fill="currentColor"
+                    d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3V2zm13 8H4v10h16V10z"/>
+                </svg>
+
+              </button>
+          </div>
+          @if (showCalendar) {
+            <div class="calendar-container">
+              <app-date-picker
+                (dateSelected)="onDateSelected($event)">
+              </app-date-picker>
+            </div>
+          }
+        </div> -->
+
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input
+            type="date"
+            name="dateOfBirth"
+            [(ngModel)]="formData.dateOfBirth"
+            required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Address</label>
+          <input
+            type="text"
+            name="address"
+            [(ngModel)]="formData.address"
+            required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Account Type</label>
+          <select
+            name="accountType"
+            [(ngModel)]="formData.accountType"
+            required
+            class="form-select">
+
+            <option value="">Select Account Type</option>
+
+            @for (type of accountTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="message full-width"
+            [ngClass]="messageType"
+            [style.display]="message ? 'block' : 'none'">
+          {{ message }}
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary full-width"
+          [disabled]="
+            loading ||
+            registerForm.invalid ||
+            confirmPassword !== formData.password">
+          {{ loading ? 'Processing...' : 'Register' }}
+        </button>
+      </div>
+
+    </form>
+
+    <p class="link-text">
+      Already have an account?
+      <a routerLink="/login">Login here</a>
+    </p>
+  </div>
+</div>

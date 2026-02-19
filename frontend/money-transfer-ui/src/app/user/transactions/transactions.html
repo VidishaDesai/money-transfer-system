@@ -1,0 +1,134 @@
+<div class="container">
+  <div class="card">
+    <h2>Transaction History</h2>
+
+    @if (transactions.length === 0) {
+      <p>No transactions yet.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <div class="th-filter">
+                  <span>Date</span>
+                  <select
+                    [(ngModel)]="filters.dateRange"
+                    (change)="applyFilters()"
+                    class="table-filter">
+                    <option value="">All</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="week">Last 7 Days</option>
+                    <option value="month">Last 30 Days</option>
+                  </select>
+                </div>
+              </th>
+
+              <th>
+                <div class="th-filter">
+                  <span>Type</span>
+                  <select
+                    [(ngModel)]="filters.transactionType"
+                    (change)="applyFilters()"
+                    class="table-filter">
+                    <option value="">All</option>
+                    <option value="DEBIT">Debit</option>
+                    <option value="CREDIT">Credit</option>
+                    <option value="REVERSAL">Reversal</option>
+                  </select>
+                </div>
+              </th>
+
+              <th>Account</th>
+              <th>Amount</th>
+
+              <th>
+                <div class="th-filter">
+                  <span>Status</span>
+                  <select
+                    [(ngModel)]="filters.status"
+                    (change)="applyFilters()"
+                    class="table-filter">
+                    <option value="">All</option>
+                    <option value="SUCCESS">Success</option>
+                    <option value="FAILED">Failed</option>
+                    <option value="ROLLBACK_REQUESTED">Rollback Requested</option>
+                    <option value="ROLLED_BACK">Rolled Back</option>
+                    <option value="ROLLBACK_REJECTED">Rollback Rejected</option>
+                  </select>
+                </div>
+              </th>
+
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (paginatedTransactions.length === 0) {
+              <tr>
+                <td colspan="6" class="text-center">
+                  <p>No transactions yet.</p>
+                </td>
+              </tr>
+            } @else {
+              @for (tx of paginatedTransactions; track tx.id) {
+                <tr>
+                  <td>{{ formatDate(tx.createdOn) }}</td>
+
+                  <td>
+                    <span class="badge {{ tx.transactionType.toLowerCase() }}">
+                      {{ tx.transactionType }}
+                    </span>
+                  </td>
+
+                  <td>{{ getOtherAccount(tx) }}</td>
+
+                  <td>₹{{ tx.amount }}</td>
+
+                  <td>
+                    <span class="badge {{ tx.status.toLowerCase() }}">
+                      {{ tx.status }}
+                    </span>
+                  </td>
+
+                  <td>
+                    @if (tx.transactionType === 'DEBIT' && tx.status === 'SUCCESS') {
+                      <button
+                        class="btn btn-danger btn-small"
+                        (click)="requestRollback(tx.id)">
+                        Rollback
+                      </button>
+                    } @else {
+                      <span style="opacity:0.5;">—</span>
+                    }
+                  </td>
+
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+
+        <app-pagination
+          [totalItems]="filteredTransactions.length"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
+
+  </div>
+</div>
+
+@if (showRollbackDialog) {
+  <app-confirm-dialog
+    title="Request Rollback"
+    message="Are you sure you want to request rollback for this transaction?"
+    confirmText="Yes, Request"
+    cancelText="Cancel"
+    (confirm)="confirmRollback()"
+    (cancel)="cancelRollback()">
+  </app-confirm-dialog>
+}
