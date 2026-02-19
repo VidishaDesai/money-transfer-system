@@ -18,7 +18,7 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
     // @Query("SELECT t FROM TransactionLog t WHERE t.fromAccountId = :accountId OR t.toAccountId = :accountId ORDER BY t.createdOn DESC")
     @Query("SELECT t FROM TransactionLog t " +
        "WHERE (t.fromAccountId = :accountId AND t.transactionType = 'DEBIT') " +
-       "OR (t.toAccountId = :accountId AND t.transactionType = 'CREDIT') " +
+       "OR (t.toAccountId = :accountId AND t.transactionType in ('CREDIT', 'DEPOSIT')) " +
        "ORDER BY t.createdOn DESC")
     List<TransactionLog> findByAccountId(@Param("accountId") Long accountId);
     
