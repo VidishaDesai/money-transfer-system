@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: money-transfer-system
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    open-in-view: false
+
+snowflake:
+  datasource:
+    url: jdbc:snowflake://GZMBSPD-CF76283.snowflakecomputing.com/?warehouse=MTS_WH&db=MONEY_TRANSFER_DW&schema=ANALYTICS&use_arrow_result_format=false
+    username: VISHALK
+    password: vishal_K_140305
+    driver-class-name: net.snowflake.client.jdbc.SnowflakeDriver
+
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
+
+# Application Configuration
+app:
+  account:
+    minimum-balances:
+      SAVINGS: 5000
+      STUDENT: 0
+      CURRENT: 1000
+      SALARY: 0
+      NRE: 10000
+      NRO: 10000
+      BUSINESS: 10000
+      PREMIUM: 25000
+      JOINT: 5000
+      SENIOR: 1000
+      ADMIN: 0
+  rollback:
+    window-minutes: 10
+
+# Default admin user credentials (auto-created on first startup)
+admin:
+  default:
+    email: admin@system.com
+    password: admin123
+    name: System Administrator
+
+
+# Enable file logging
+logging:
+  file:
+    name: money-transfer.log
+    path: logs/
+  level:
+    root: INFO
