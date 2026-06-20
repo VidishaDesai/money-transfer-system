@@ -30,13 +30,10 @@ public class RewardService {
     private final AccountRepository accountRepository;
 
     @Transactional
-<<<<<<< HEAD
+
     public int awardReward(Long accountId, Long toAccountId, String transactionId, BigDecimal amount) {
         if (accountId == null || toAccountId == null || transactionId == null || amount == null) {
-=======
-    public int awardReward(Long accountId, String transactionId, BigDecimal amount) {
-        if (accountId == null || transactionId == null || amount == null) {
->>>>>>> 0056fe5c05f882ffa605371c02e47988bb3fb3cf
+
             return 0;
         }
 
@@ -49,7 +46,7 @@ public class RewardService {
             return 0;
         }
 
-<<<<<<< HEAD
+
         LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
 
         // Cap 1: max rewarded transfers per day TO THIS SPECIFIC recipient
@@ -74,31 +71,9 @@ public class RewardService {
             return 0;
         }
         
-=======
-        // ===== Daily rate limiting (anti-gaming) =====
-        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
-
         long rewardedTransfersToday = rewardRepository
                 .countByAccountIdAndCreatedOnGreaterThanEqual(accountId, startOfDay);
 
-        if (rewardedTransfersToday >= rewardProperties.getMaxRewardedTransfersPerDay()) {
-            log.info("Daily rewarded-transfer cap reached for account {} ({} transfers today)",
-                    accountId, rewardedTransfersToday);
-            return 0;
-        }
-
-        Integer pointsEarnedToday = rewardRepository.sumPointsByAccountIdSince(accountId, startOfDay);
-        int alreadyEarnedToday = pointsEarnedToday == null ? 0 : pointsEarnedToday;
-
-        int remainingDailyAllowance = rewardProperties.getMaxPointsPerDay() - alreadyEarnedToday;
-        if (remainingDailyAllowance <= 0) {
-            log.info("Daily points cap reached for account {} ({} points today)",
-                    accountId, alreadyEarnedToday);
-            return 0;
-        }
-
-        // Cap to remaining daily allowance instead of denying outright
->>>>>>> 0056fe5c05f882ffa605371c02e47988bb3fb3cf
         points = Math.min(points, remainingDailyAllowance);
 
         Reward reward = new Reward();

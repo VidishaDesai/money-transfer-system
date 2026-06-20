@@ -23,7 +23,6 @@ public interface RewardRepository extends JpaRepository<Reward, String> {
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r WHERE r.accountId = :accountId AND r.createdOn >= :startOfDay")
     Integer sumPointsByAccountIdSince(@Param("accountId") Long accountId, @Param("startOfDay") LocalDateTime startOfDay);
 
-<<<<<<< HEAD
     // Per sender-recipient pair counters
     @Query("SELECT COUNT(r) FROM Reward r WHERE r.accountId = :accountId AND r.toAccountId = :toAccountId AND r.createdOn >= :startOfDay")
     long countByAccountIdAndToAccountIdAndCreatedOnGreaterThanEqual(@Param("accountId") Long accountId, @Param("toAccountId") Long toAccountId, @Param("startOfDay") LocalDateTime startOfDay);
@@ -31,8 +30,6 @@ public interface RewardRepository extends JpaRepository<Reward, String> {
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r WHERE r.accountId = :accountId AND r.toAccountId = :toAccountId AND r.createdOn >= :startOfDay")
     Integer sumPointsByAccountIdAndToAccountIdSince(@Param("accountId") Long accountId, @Param("toAccountId") Long toAccountId, @Param("startOfDay") LocalDateTime startOfDay);
 
-=======
->>>>>>> 0056fe5c05f882ffa605371c02e47988bb3fb3cf
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r")
     Integer sumAllPoints();
 }
