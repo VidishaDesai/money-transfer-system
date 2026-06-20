@@ -16,12 +16,18 @@ export const API = {
     SEARCH: '/api/v1/accounts/search'
   },
 
+<<<<<<< HEAD
   REWARDS: {
     HISTORY: '/api/v1/rewards/history',
     BALANCE: '/api/v1/rewards/balance',
     REDEMPTIONS: '/api/v1/rewards/redemptions',
     REDEEM: '/api/v1/rewards/redeem',
   },
+=======
+  // REWARDS: {
+  //   HISTORY: '/api/v1/rewards/history'
+  // },
+>>>>>>> 0056fe5c05f882ffa605371c02e47988bb3fb3cf
 
   ADMIN: {
     PENDING: '/api/v1/admin/accounts/pending',
