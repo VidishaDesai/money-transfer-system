@@ -23,6 +23,7 @@ export class UserDashboard {
   holderName = '';
   accountId = '';
   balance = '0.00';
+  rewardPoints = 0;
 
 
   constructor(
@@ -79,7 +80,8 @@ export class UserDashboard {
   ).subscribe({
       next: (data) => {
         this.balance = Number(data.balance).toFixed(2);
-        console.log('Balance loaded:', this.balance);
+        this.rewardPoints = Number(data.rewardPoints ?? 0);
+        console.log('Balance loaded:', this.balance, 'Reward points:', this.rewardPoints);
         this.cdr.detectChanges(); 
       },
       error: (err) => {

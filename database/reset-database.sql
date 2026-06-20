@@ -53,6 +53,19 @@ DROP TABLE IF EXISTS accounts;
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+-- Create rewards table
+CREATE TABLE rewards (
+    reward_id VARCHAR(36) PRIMARY KEY,
+    account_id BIGINT NOT NULL,
+    transaction_id VARCHAR(36) NOT NULL,
+    points INT NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_account_id (account_id),
+    INDEX idx_transaction_id (transaction_id),
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Tables are now empty and ready for the application to create the admin user automatically
 SELECT 'Database reset complete. Start the application to auto-create admin user.' AS message;
 

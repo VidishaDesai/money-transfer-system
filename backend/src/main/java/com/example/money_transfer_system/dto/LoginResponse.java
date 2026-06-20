@@ -16,4 +16,5 @@ public class LoginResponse {
     private String email;
     private String role;
     private BigDecimal balance;
+    private Integer rewardPoints;
 }

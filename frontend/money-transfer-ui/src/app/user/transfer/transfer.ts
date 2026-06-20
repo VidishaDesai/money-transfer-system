@@ -40,6 +40,7 @@ export class Transfer {
   loading = false;
   message = '';
   messageType = '';
+  earnedPoints = 0;
 
   constructor(
     private http: HttpClient,
@@ -65,8 +66,9 @@ export class Transfer {
 
     this.http.post(API.TRANSFERS.CREATE, this.transferData)
       .subscribe({
-        next: () => {
-          this.form.setSuccess(this, 'Transfer successful!');
+        next: (data: any) => {
+          this.earnedPoints = data?.rewardPoints ?? 0;
+          this.form.setSuccess(this, 'Transfer successful! Reward points earned: ' + this.earnedPoints);
           this.balanceService.notifyBalanceChanged();
           this.cdr.detectChanges();
         },

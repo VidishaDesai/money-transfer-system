@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="card">
+    <h2>Reward History</h2>
+
+    @if (loading) {
+      <p>Loading rewards...</p>
+    } @else if (error) {
+      <p class="error">{{ error }}</p>
+    } @else if (rewards.length === 0) {
+      <p>No rewards earned yet.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Transaction ID</th>
+              <th>Amount</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reward of paginatedRewards; track reward.id) {
+              <tr>
+                <td>{{ formatDate(reward.createdOn) }}</td>
+                <td>{{ reward.transactionId }}</td>
+                <td>₹{{ reward.amount }}</td>
+                <td>{{ reward.points }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <app-pagination
+        [totalItems]="rewards.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  </div>
+</div>

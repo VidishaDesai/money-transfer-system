@@ -3,6 +3,7 @@ import java.util.*;
 import com.example.money_transfer_system.entity.Account;
 import com.example.money_transfer_system.security.JwtUtil;
 import com.example.money_transfer_system.service.AccountService;
+import com.example.money_transfer_system.service.RewardService;
 import com.example.money_transfer_system.dto.AccountSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class AccountController {
 
     private final AccountService accountService;
+    private final RewardService rewardService;
     private final JwtUtil jwtUtil;
 
     @GetMapping("/{id}")
@@ -58,10 +60,12 @@ public class AccountController {
         }
 
         BigDecimal balance = accountService.getBalance(id);
+        int rewardPoints = rewardService.getTotalPointsForAccount(id);
         
         Map<String, Object> response = new HashMap<>();
         response.put("accountId", id);
         response.put("balance", balance);
+        response.put("rewardPoints", rewardPoints);
         
         return ResponseEntity.ok(response);
     }

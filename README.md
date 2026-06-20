@@ -183,6 +183,50 @@ Grid layout optimized for desktop view.
 
 ---
 
+### Rewards Module
+
+* Eligibility: transaction `status == SUCCESS`, transfer `amount > 100`, and `sender != receiver`.
+* Points calculation: 1 reward point per full 100 transferred (e.g. 250 -> 2 points).
+* Persistence: rewards are stored in a new `rewards` table (MySQL) and mirrored to Snowflake.
+* APIs:
+  - `GET /api/v1/rewards/history` — user reward history (requires JWT)
+  - Transfer responses include `rewardPoints` in the `TransferResponse` payload.
+
+
+---
+
+### Snowflake ETL and Analytics Refresh
+
+The Python ETL at `snowflake/main.py` was extended to:
+
+- Extract and load `rewards` from MySQL into `MONEY_TRANSFER_OLTP.CORE.rewards`.
+- After loading OLTP tables, refresh the DW by:
+  - Merging `MONEY_TRANSFER_OLTP.CORE.accounts` into `MONEY_TRANSFER_DW.ANALYTICS.DIM_ACCOUNT`.
+  - Rebuilding `MONEY_TRANSFER_DW.ANALYTICS.FACT_TRANSACTIONS` from OLTP `transaction_logs`.
+  - Creating and rebuilding `MONEY_TRANSFER_DW.ANALYTICS.FACT_REWARDS` from OLTP `rewards`.
+
+Important: Snowflake OLTP schema must include the columns referenced by ETL. If you use the provided Snowflake DDL, ensure `transaction_logs` contains these columns:
+
+State tracking: `snowflake/state.json` now includes `rewards_last_loaded` in addition to the existing timestamps. Example:
+
+```
+{
+  "accounts_last_loaded": "1970-01-01 00:00:00",
+  "transactions_last_loaded": "1970-01-01 00:00:00",
+  "rewards_last_loaded": "1970-01-01 00:00:00"
+}
+```
+
+To run the ETL and refresh DW tables locally:
+
+```bash
+cd snowflake
+python .\main.py
+```
+
+If you prefer running DW refresh manually in Snowflake, use the MERGE / TRUNCATE / INSERT patterns described in the `snowflake/main.py` code (or ask me for a single SQL block and I'll provide it).
+
+
 ## Project Workflow
 
 ### User Lifecycle

@@ -16,6 +16,10 @@ export const API = {
     SEARCH: '/api/v1/accounts/search'
   },
 
+  REWARDS: {
+    HISTORY: '/api/v1/rewards/history'
+  },
+
   ADMIN: {
     PENDING: '/api/v1/admin/accounts/pending',
     APPROVE: (id: number) => `/api/v1/admin/accounts/${id}/approve`,

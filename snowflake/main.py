@@ -18,7 +18,8 @@ def load_state():
         print("State file not found. Creating default state.")
         return {
             "accounts_last_loaded": "1970-01-01 00:00:00",
-            "transactions_last_loaded": "1970-01-01 00:00:00"
+            "transactions_last_loaded": "1970-01-01 00:00:00",
+            "rewards_last_loaded": "1970-01-01 00:00:00"
         }
     with open(STATE_FILE, "r") as f:
         state = json.load(f)
@@ -126,6 +127,94 @@ def load_to_snowflake(df, table_name):
     print(f"SUCCESS: Loaded {len(df)} rows into {table_name}")
     return len(df)
 
+
+def refresh_data_warehouse():
+    print("Refreshing DW tables in Snowflake...")
+    conn = snowflake.connector.connect(**SNOWFLAKE_CONFIG)
+    cursor = conn.cursor()
+
+    statements = [
+        # Merge accounts into DIM_ACCOUNT
+        """
+        MERGE INTO MONEY_TRANSFER_DW.ANALYTICS.DIM_ACCOUNT tgt
+        USING (
+            SELECT id account_id,
+                   holder_name,
+                   status
+            FROM MONEY_TRANSFER_OLTP.CORE.accounts
+        ) src
+        ON tgt.account_id = src.account_id
+        WHEN MATCHED THEN
+        UPDATE SET holder_name = src.holder_name, status = src.status
+        WHEN NOT MATCHED THEN
+        INSERT(account_id, holder_name, status)
+        VALUES(src.account_id, src.holder_name, src.status)
+        """,
+
+        # Rebuild FACT_TRANSACTIONS
+        "TRUNCATE TABLE MONEY_TRANSFER_DW.ANALYTICS.FACT_TRANSACTIONS",
+
+        """
+        INSERT INTO MONEY_TRANSFER_DW.ANALYTICS.FACT_TRANSACTIONS
+        (account_from_key, account_to_key, date_key, amount, status)
+        SELECT
+            da_from.account_key,
+            da_to.account_key,
+            TO_NUMBER(TO_CHAR(CAST(t.created_on AS DATE),'YYYYMMDD')),
+            t.amount,
+            t.status
+        FROM MONEY_TRANSFER_OLTP.CORE.transaction_logs t
+        LEFT JOIN MONEY_TRANSFER_DW.ANALYTICS.DIM_ACCOUNT da_from
+            ON da_from.account_id = t.from_account_id
+        LEFT JOIN MONEY_TRANSFER_DW.ANALYTICS.DIM_ACCOUNT da_to
+            ON da_to.account_id = t.to_account_id
+        """,
+
+        # Ensure FACT_REWARDS exists, then rebuild it from OLTP rewards
+        """
+        CREATE TABLE IF NOT EXISTS MONEY_TRANSFER_DW.ANALYTICS.FACT_REWARDS (
+            reward_key NUMBER(38,0) IDENTITY START 1 INCREMENT 1,
+            account_key NUMBER(38,0),
+            date_key NUMBER(8,0),
+            transaction_id VARCHAR(36),
+            points NUMBER(10,0),
+            amount NUMBER(15,2)
+        )
+        """,
+
+        "TRUNCATE TABLE MONEY_TRANSFER_DW.ANALYTICS.FACT_REWARDS",
+
+        """
+        INSERT INTO MONEY_TRANSFER_DW.ANALYTICS.FACT_REWARDS
+        (account_key, date_key, transaction_id, points, amount)
+        SELECT
+            da.account_key,
+            TO_NUMBER(TO_CHAR(CAST(r.created_on AS DATE),'YYYYMMDD')),
+            r.transaction_id,
+            r.points,
+            r.amount
+        FROM MONEY_TRANSFER_OLTP.CORE.rewards r
+        LEFT JOIN MONEY_TRANSFER_DW.ANALYTICS.DIM_ACCOUNT da
+            ON da.account_id = r.account_id
+        """
+    ]
+
+    try:
+        for stmt in statements:
+            print("Executing DW statement...")
+            cursor.execute(stmt)
+
+        conn.commit()
+        print("DW refresh completed.")
+
+    except Exception as e:
+        print("Failed to refresh DW:", e)
+        traceback.print_exc()
+
+    finally:
+        cursor.close()
+        conn.close()
+
 def main():
     print("==== ENTERED MAIN FUNCTION ====")
 
@@ -146,8 +235,15 @@ def main():
         WHERE created_on > '{state['transactions_last_loaded']}'
     """
 
+    rewards_query = f"""
+        SELECT *
+        FROM rewards
+        WHERE created_on > '{state.get('rewards_last_loaded', '1970-01-01 00:00:00')}'
+    """
+
     accounts_df = extract_mysql(accounts_query)
     transactions_df = extract_mysql(transactions_query)
+    rewards_df = extract_mysql(rewards_query)
 
     accounts_loaded = load_to_snowflake(
         accounts_df,
@@ -159,13 +255,28 @@ def main():
         "MONEY_TRANSFER_OLTP.CORE.transaction_logs"
     )
 
+    rewards_loaded = load_to_snowflake(
+        rewards_df,
+        "MONEY_TRANSFER_OLTP.CORE.rewards"
+    )
+
     if accounts_loaded > 0:
         state["accounts_last_loaded"] = str(accounts_df["last_updated"].max())
 
     if transactions_loaded > 0:
         state["transactions_last_loaded"] = str(transactions_df["created_on"].max())
 
+    if rewards_loaded > 0:
+        # rewards table uses `created_on` as the timestamp column
+        state["rewards_last_loaded"] = str(rewards_df["created_on"].max())
+
     save_state(state)
+
+    # Refresh the analytics/data-warehouse tables from OLTP data
+    try:
+        refresh_data_warehouse()
+    except Exception as e:
+        print("Warning: DW refresh failed:", e)
 
     print("==== ETL COMPLETED SUCCESSFULLY ====")
 

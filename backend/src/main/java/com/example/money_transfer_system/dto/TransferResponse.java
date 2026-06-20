@@ -16,4 +16,5 @@ public class TransferResponse {
     private Long debitedFrom;
     private Long creditedTo;
     private BigDecimal amount;
+    private Integer rewardPoints;
 }

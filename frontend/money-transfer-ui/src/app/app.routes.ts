@@ -4,6 +4,7 @@ import { Register } from './auth/register/register';
 import { Login } from './auth/login/login';
 import { Transactions } from './user/transactions/transactions';
 import { Transfer } from './user/transfer/transfer';
+import { Rewards } from './user/rewards/rewards';
 import { UserDashboard } from './user/user-dashboard/user-dashboard';
 import { authGuard } from './core/guards/auth.guard';
 import { Approvals } from './admin/approvals/approvals';
@@ -25,7 +26,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'transfer', component: Transfer },
-      { path: 'transactions', component: Transactions }
+      { path: 'transactions', component: Transactions },
+      { path: 'rewards', component: Rewards }
     ]
   },
 

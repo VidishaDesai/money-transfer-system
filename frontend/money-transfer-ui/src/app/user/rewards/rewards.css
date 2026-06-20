@@ -1,0 +1,29 @@
+.container {
+  padding: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+th {
+  font-weight: 700;
+}
+
+.error {
+  color: #c0392b;
+}

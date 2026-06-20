@@ -18,7 +18,7 @@ public class MySqlConfig {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/money_transfer_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
         dataSource.setUsername("root");
-        dataSource.setPassword("Root123$");
+        dataSource.setPassword("Cloud@123$");
 
         return dataSource;
     }

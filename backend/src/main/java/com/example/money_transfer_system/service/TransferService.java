@@ -13,6 +13,7 @@ import com.example.money_transfer_system.enums.TransactionType;
 import com.example.money_transfer_system.exception.*;
 import com.example.money_transfer_system.repository.AccountRepository;
 import com.example.money_transfer_system.repository.TransactionLogRepository;
+import com.example.money_transfer_system.service.RewardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class TransferService {
     private final AccountRepository accountRepository;
     private final TransactionLogRepository transactionLogRepository;
     private final AccountProperties accountProperties;
+    private final RewardService rewardService;
 
     private final RollbackProperties rollbackProperties;
     private final TransactionLogService transactionLogService;
@@ -113,6 +115,12 @@ public class TransferService {
             creditLog.setIdempotencyKey(request.getIdempotencyKey() + "-CREDIT");
             transactionLogRepository.save(creditLog);
 
+            int rewardPoints = rewardService.awardReward(
+                    fromAccount.getId(),
+                    debitLog.getId(),
+                    request.getAmount()
+            );
+
             log.info("Transfer successful: {} from account {} to account {}",
                     request.getAmount(), fromAccount.getId(), toAccount.getId());
 
@@ -122,7 +130,8 @@ public class TransferService {
                     "Transfer completed successfully",
                     fromAccount.getId(),
                     toAccount.getId(),
-                    request.getAmount()
+                    request.getAmount(),
+                    rewardPoints
             );
 
         } catch (RuntimeException ex) {

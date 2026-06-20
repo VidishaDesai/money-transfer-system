@@ -5,12 +5,11 @@ import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { API } from '../../core/api';
 import { FormService } from '../../core/services/form.service';
-import { DatePicker } from '../../shared/date-picker/date-picker';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule, DatePicker],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './register.html'
 })
 export class Register {

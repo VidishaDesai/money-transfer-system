@@ -17,6 +17,7 @@
     <div class="balance-card">
       <p>Account ID: <strong>{{ accountId }}</strong></p>
       <p>Current Balance: <strong>₹{{ balance }}</strong></p>
+      <p>Reward Points: <strong>{{ rewardPoints }}</strong></p>
     </div>
 
     <!-- <div class="button-group">
@@ -78,6 +79,25 @@
 
         <h3>Transaction History</h3>
         <p>View all credits and debits</p>
+
+      </div>
+
+      <div
+        routerLink="rewards"
+        routerLinkActive="active"
+        #rla3="routerLinkActive"
+        class="action-card"
+        [class.active]="rla3.isActive">
+
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M12 2l3 6 6 .5-4.5 4 1.5 6L12 16l-6 3.5 1.5-6L3 8.5 9 8l3-6z"/>
+          </svg>
+        </div>
+
+        <h3>Rewards</h3>
+        <p>See points earned from successful transfers</p>
 
       </div>
 

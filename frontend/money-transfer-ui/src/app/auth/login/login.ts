@@ -52,6 +52,8 @@ export class Login {
           localStorage.setItem('email', data.email);
           localStorage.setItem('role', data.role);
           localStorage.setItem('balance', data.balance);
+          localStorage.setItem('rewardPoints', data.rewardPoints ?? '0');
+          localStorage.setItem('rewardPoints', data.rewardPoints ?? '0');
 
           this.loading = false;
 

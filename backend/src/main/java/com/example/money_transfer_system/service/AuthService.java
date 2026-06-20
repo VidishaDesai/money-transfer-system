@@ -7,6 +7,7 @@ import com.example.money_transfer_system.entity.Account;
 import com.example.money_transfer_system.enums.AccountStatus;
 import com.example.money_transfer_system.exception.AccountNotActiveException;
 import com.example.money_transfer_system.security.JwtUtil;
+import com.example.money_transfer_system.service.RewardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AccountService accountService;
+    private final RewardService rewardService;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
@@ -64,6 +66,8 @@ public class AuthService {
                     account.getRole().name()
             );
 
+            int rewardPoints = rewardService.getTotalPointsForAccount(account.getId());
+
             log.info("User logged in successfully: {}", request.getEmail());
 
             return new LoginResponse(
@@ -72,7 +76,8 @@ public class AuthService {
                     account.getHolderName(),
                     account.getEmail(),
                     account.getRole().name(),
-                    account.getBalance()
+                    account.getBalance(),
+                    rewardPoints
             );
 
         } catch (BadCredentialsException e) {
