@@ -17,6 +17,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    @ExceptionHandler(InsufficientRewardPointsException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientRewardPoints(
+            InsufficientRewardPointsException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                "RWD-400",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAccountNotFound(
             AccountNotFoundException ex, HttpServletRequest request) {

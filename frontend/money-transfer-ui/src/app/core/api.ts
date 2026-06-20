@@ -16,9 +16,9 @@ export const API = {
     SEARCH: '/api/v1/accounts/search'
   },
 
-  REWARDS: {
-    HISTORY: '/api/v1/rewards/history'
-  },
+  // REWARDS: {
+  //   HISTORY: '/api/v1/rewards/history'
+  // },
 
   ADMIN: {
     PENDING: '/api/v1/admin/accounts/pending',
@@ -32,6 +32,10 @@ export const API = {
     ROLLBACK_REQUESTS: '/api/v1/admin/transfers/rollback-requests',
     APPROVE_ROLLBACK: (transactionId: string) => `/api/v1/admin/rollbacks/${transactionId}/approve`,
     REJECT_ROLLBACK: (transactionId: string) => `/api/v1/admin/rollbacks/${transactionId}/reject`,
+
+    REWARDS_SUMMARY: '/api/v1/admin/rewards/summary',
+    REWARDS_ACCOUNTS: '/api/v1/admin/rewards/accounts',
+    REWARDS_REDEMPTIONS: '/api/v1/admin/rewards/redemptions',
 
     SNOWFLAKE: '/api/v1/analytics/kpis'
   }

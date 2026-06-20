@@ -53,7 +53,10 @@ app:
       SENIOR: 1000
       ADMIN: 0
   rollback:
-    window-minutes: 10
+    window-minutes: 1
+  reward:
+    max-rewarded-transfers-per-day: 2
+    max-points-per-day: 5
 
 # Default admin user credentials (auto-created on first startup)
 admin:

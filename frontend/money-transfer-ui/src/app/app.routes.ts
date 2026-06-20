@@ -15,6 +15,8 @@ import { Accounts } from './admin/accounts/accounts';
 import { Analytics } from './admin/analytics/analytics';
 import { Rollbacks } from './admin/rollbacks/rollbacks';
 
+import { AdminRewards } from './admin/rewards/rewards';  //added
+
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'register', component: Register },
@@ -41,7 +43,8 @@ export const routes: Routes = [
       { path: 'rollbacks', component: Rollbacks },
       { path: 'accounts', component: Accounts },
       { path: 'transactions', component: AdminTransactions },
-      { path: 'analytics', component: Analytics }
+      { path: 'analytics', component: Analytics },
+      { path: 'rewards', component: AdminRewards } //added
     ]
   },
   { path: '**', redirectTo: '' }

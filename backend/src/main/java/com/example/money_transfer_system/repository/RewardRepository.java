@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;  //
 import java.util.List;
 
 @Repository
@@ -15,4 +16,13 @@ public interface RewardRepository extends JpaRepository<Reward, String> {
 
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r WHERE r.accountId = :accountId")
     Integer sumPointsByAccountId(@Param("accountId") Long accountId);
+
+    //added
+    long countByAccountIdAndCreatedOnGreaterThanEqual(Long accountId, LocalDateTime startOfDay);
+
+    @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r WHERE r.accountId = :accountId AND r.createdOn >= :startOfDay")
+    Integer sumPointsByAccountIdSince(@Param("accountId") Long accountId, @Param("startOfDay") LocalDateTime startOfDay);
+
+    @Query("SELECT COALESCE(SUM(r.points), 0) FROM Reward r")
+    Integer sumAllPoints();
 }
