@@ -54,3 +54,4 @@ CREATE TABLE transaction_logs (
     FOREIGN KEY (to_account_id) REFERENCES accounts(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+ALTER TABLE rewards ADD COLUMN to_account_id BIGINT NULL;

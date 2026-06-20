@@ -128,6 +128,24 @@
         <p>Snowflake KPI dashboard</p>
       </div>
 
+      <div
+        routerLink="rewards"
+        routerLinkActive="active"
+        #rla6="routerLinkActive"
+        class="action-card"
+        [class.active]="rla6.isActive">
+
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24">
+            <path fill="currentColor"
+              d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4 5.7 21l2.3-7.2-6-4.6h7.6z"/>
+          </svg>
+        </div>
+
+        <h3>Reward Points</h3>
+        <p>Issued, redeemed and outstanding balance</p>
+      </div>
+      
     </div>
 
   </div>

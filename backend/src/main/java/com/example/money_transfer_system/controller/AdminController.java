@@ -12,6 +12,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.money_transfer_system.security.JwtUtil;
 
+import com.example.money_transfer_system.dto.RewardAccountSummary;
+import com.example.money_transfer_system.dto.RewardAdminSummary;
+import com.example.money_transfer_system.entity.RewardRedemption;
+import com.example.money_transfer_system.service.RewardService;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +30,7 @@ public class AdminController {
     private final AccountService accountService;
     private final TransferService transferService;
     private final JwtUtil jwtUtil;
+    private final RewardService rewardService;
 
     @GetMapping("/accounts/pending")
     public ResponseEntity<List<Account>> getPendingAccounts() {
@@ -113,4 +119,18 @@ public class AdminController {
         );
     }
 
+    @GetMapping("/rewards/summary")
+    public ResponseEntity<RewardAdminSummary> getRewardSummary() {
+        return ResponseEntity.ok(rewardService.getAdminSummary());
+    }
+
+    @GetMapping("/rewards/accounts")
+    public ResponseEntity<List<RewardAccountSummary>> getRewardAccountSummaries() {
+        return ResponseEntity.ok(rewardService.getAccountSummaries());
+    }
+
+    @GetMapping("/rewards/redemptions")
+    public ResponseEntity<List<RewardRedemption>> getAllRedemptions() {
+        return ResponseEntity.ok(rewardService.getAllRedemptions());
+    }
 }

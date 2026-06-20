@@ -69,10 +69,7 @@ CREATE TABLE rewards (
 -- Tables are now empty and ready for the application to create the admin user automatically
 SELECT 'Database reset complete. Start the application to auto-create admin user.' AS message;
 
-
-
-
-
---If the application fails to run but the build is success, run the following query
 ALTER TABLE accounts
   ADD COLUMN min_balance DECIMAL(19,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE rewards ADD COLUMN to_account_id BIGINT NULL;

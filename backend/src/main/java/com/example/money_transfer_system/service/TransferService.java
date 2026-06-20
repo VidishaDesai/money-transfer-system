@@ -117,6 +117,7 @@ public class TransferService {
 
             int rewardPoints = rewardService.awardReward(
                     fromAccount.getId(),
+                    toAccount.getId(),
                     debitLog.getId(),
                     request.getAmount()
             );

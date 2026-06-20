@@ -27,3 +27,32 @@ th {
 .error {
   color: #c0392b;
 }
+
+.reward-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f6f8fa;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.reward-balance strong {
+  font-size: 1.4rem;
+}
+
+.redeem-form {
+  margin-bottom: 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tabs .active {
+  background: #2d6cdf;
+  color: #fff;
+}

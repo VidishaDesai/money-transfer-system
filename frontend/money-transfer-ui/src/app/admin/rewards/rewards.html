@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="card">
+    <h2>Reward Points Overview</h2>
+
+    <div class="action-grid">
+      <div class="action-card">
+        <h3>{{ summary.totalPointsIssued }}</h3>
+        <p>Total Points Issued</p>
+      </div>
+      <div class="action-card">
+        <h3>{{ summary.totalPointsRedeemed }}</h3>
+        <p>Total Points Redeemed</p>
+      </div>
+      <div class="action-card">
+        <h3>{{ summary.totalPointsOutstanding }}</h3>
+        <p>Outstanding Balance (Liability)</p>
+      </div>
+    </div>
+
+    <div class="tabs" style="display:flex; gap:0.5rem; margin: 1rem 0;">
+      <button type="button" class="btn btn-secondary" [class.active]="activeTab === 'accounts'" (click)="setTab('accounts')">By Account</button>
+      <button type="button" class="btn btn-secondary" [class.active]="activeTab === 'redemptions'" (click)="setTab('redemptions')">Redemption Log</button>
+    </div>
+
+    @if (activeTab === 'accounts') {
+      @if (accountSummaries.length === 0) {
+        <p>No reward activity yet.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Account ID</th><th>Holder</th><th>Email</th><th>Total Earned</th><th>Total Redeemed</th><th>Balance</th></tr>
+            </thead>
+            <tbody>
+              @for (acc of paginatedAccounts; track acc.accountId) {
+                <tr>
+                  <td>{{ acc.accountId }}</td>
+                  <td>{{ acc.holderName }}</td>
+                  <td>{{ acc.email }}</td>
+                  <td>{{ acc.totalEarned }}</td>
+                  <td>{{ acc.totalRedeemed }}</td>
+                  <td>{{ acc.balance }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination [totalItems]="accountSummaries.length" [pageSize]="pageSize" [currentPage]="currentPage" (pageChange)="onPageChange($event)"></app-pagination>
+      }
+    } @else {
+      @if (redemptions.length === 0) {
+        <p>No redemptions yet.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Account ID</th><th>Used For</th><th>Points</th></tr>
+            </thead>
+            <tbody>
+              @for (r of paginatedRedemptions; track r.id) {
+                <tr>
+                  <td>{{ formatDate(r.redeemedOn) }}</td>
+                  <td>{{ r.accountId }}</td>
+                  <td>{{ r.description }}</td>
+                  <td>-{{ r.points }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <app-pagination [totalItems]="redemptions.length" [pageSize]="pageSize" [currentPage]="currentPage" (pageChange)="onPageChange($event)"></app-pagination>
+      }
+    }
+  </div>
+</div>
